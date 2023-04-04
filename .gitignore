@@ -159,4 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+# 模型文件
+.pt
+.json
+
 # End of https://www.toptal.com/developers/gitignore/api/python
