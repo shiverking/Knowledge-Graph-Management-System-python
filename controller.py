@@ -32,17 +32,24 @@ entites, relations = [], []
 def link_prediction():
     '''链接预测服务'''
     inputs = request.json.get('data')
+    print(inputs)
     need_to_predict = []
     model_name = inputs['model_name']
     for input in inputs['ent_and_rel']:
         need_to_predict.append((input['ent'], input['rel']))
     res = link_prediction_1(need_to_predict, model_name)
-    for idx, tu in enumerate(res['preds'][0]):
-        new_list = list(res['preds'][0][idx])
-        new_list.append(search_type_of_ent(res['preds'][0][idx][0]))
-        res['preds'][0][idx] = tuple(new_list)
+    # for idx, tu in enumerate(res['preds'][0]):
+    #     new_list = list(res['preds'][0][idx])
+    #     new_list.append(search_type_of_ent(res['preds'][0][idx][0]))
+    #     res['preds'][0][idx] = tuple(new_list)
+    for idx in range(len(res['preds'])):
+        for in_idx in range(len(res['preds'][idx])):
+            new_list = list(res['preds'][idx][in_idx])
+            new_list.append(search_type_of_ent(res['preds'][idx][in_idx][0]))
+            res['preds'][idx][in_idx] = tuple(new_list)
     dict = {}
     dict['data'] = res
+    print(dict)
     return jsonify(dict)
 
 @server.route('/triple_classification',methods=['post'])
