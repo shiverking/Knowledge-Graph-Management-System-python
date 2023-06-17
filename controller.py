@@ -13,6 +13,7 @@ from ch_triple_extraction import ch_tri_ext
 from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
+from integrity_checks import get_the_complete_label_graph_and_missing_situations, tuple_integrity_graph
 
 server = Flask(__name__)
 server.config['JSON_AS_ASCII']=False
@@ -243,6 +244,28 @@ def linked_completion():
     res = link_completion()
     dict = {}
     dict['data'] = res
+    return jsonify(dict)
+
+@server.route('/return_integrity_results',methods=['post'])
+def return_integrity_results():
+    '''链接完整性检测结果'''
+    label_name = request.json.get('data')
+    rate = request.json.get('rate')
+    print(label_name, rate)
+    complete_label_graph, missing_situations_table = get_the_complete_label_graph_and_missing_situations(label_name, rate)
+    dict = {}
+    dict['complete_label_graph'] = complete_label_graph
+    dict['missing_situations_table'] = missing_situations_table
+    return jsonify(dict)
+
+@server.route('/return_tuple_integrity_graph',methods=['post'])
+def return_tuple_integrity_graph():
+    '''链接完整性检测结果'''
+    ent = request.json.get('ent')
+    ent_typ = request.json.get('ent_typ')
+    missing_tuple = request.json.get('missing_tuple')
+    dict = {}
+    dict['tuple_integrity_graph'] = tuple_integrity_graph(ent, ent_typ, missing_tuple)
     return jsonify(dict)
 
 if __name__ == "__main__":
