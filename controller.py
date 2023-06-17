@@ -246,7 +246,7 @@ def linked_completion():
     return jsonify(dict)
 
 if __name__ == "__main__":
-    ip="0.0.0.0"
-    port = 3389
+    ip="127.0.0.1"
+    port = 5000
     CORS(server, supports_credentials=True)
     server.run(host = ip, port = port, use_reloader=False)

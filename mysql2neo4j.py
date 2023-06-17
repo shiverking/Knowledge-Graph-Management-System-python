@@ -32,7 +32,7 @@ def traverse_coreKG():
 
 def insert2neo4j():
     '''将核心图谱中的数据插入到图数据库'''
-    graph = Graph('http://localhost:7474', auth=('neo4j', 'Sicdp2021cjw'))
+    graph = Graph('http://localhost:7474', auth=('neo4j', '123456'))
     graph.delete_all() # 清空图数据库
     triples = traverse_coreKG()
     for triple in triples:
