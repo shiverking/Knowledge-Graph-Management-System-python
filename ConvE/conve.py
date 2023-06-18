@@ -29,7 +29,6 @@ class Main(object):
         ent_set, rel_set = OrderedSet(), OrderedSet()
         dataset = get_datasets()
         for split in ['train', 'test', 'valid']:
-            # for line in pd.read_excel(f'E:/KG_system_service/ConvE/{split}.xlsx').values.tolist():
             for line in dataset[split]:
                 sub, rel, obj = line[0], line[4], line[2]
                 ent_set.add(sub)
@@ -53,7 +52,6 @@ class Main(object):
 
         for split in ['train', 'test', 'valid']:
             for line in dataset[split]:
-            # for line in pd.read_excel(f'E:/KG_system_service/ConvE/{split}.xlsx').values.tolist():
                 sub, rel, obj = line[0], line[4], line[2]
                 sub, rel, obj = self.ent2id[sub], self.rel2id[rel], self.ent2id[obj]
 
@@ -111,8 +109,6 @@ class Main(object):
 
         if self.p.gpu != '-1' and torch.cuda.is_available():
             self.device = torch.device('cuda:0')
-            # self.device = d2l.try_all_gpus()
-            # print(self.device)
             torch.cuda.set_rng_state(torch.cuda.get_rng_state())
             torch.backends.cudnn.deterministic = True
         else:
@@ -515,7 +511,7 @@ def train_model(model_name):
     parser.add_argument('-no_rev',         	dest="reverse",         action='store_false',           help='Use uniform weighting')
     parser.add_argument('-nosave',       	dest="save",       	action='store_false',           help='Negative adversarial sampling')
 
-    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=80,  help="Number of epochs")
+    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=2,  help="Number of epochs")
     parser.add_argument("-num_workers",	type=int,               default=5,                      help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
     parser.add_argument("-embed_dim",	type=int,              	default=None,                   help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
 
