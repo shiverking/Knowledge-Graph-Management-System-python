@@ -1,10 +1,9 @@
 from pyMysql import mysql_query
 from sklearn.model_selection import train_test_split
-import pandas as pd
 
 def traverse_coreKG():
     '''遍历核心图谱'''
-    sql = 'select head, head_type, relation, tail, tail_type  from core_kg'
+    sql = 'select head, head_type, tail, tail_type, relation from core_kg where tail_type != "value"'
     res = mysql_query(sql)
     return res
 
@@ -16,9 +15,7 @@ def train_test_val_split(x, train_ratio, validation_ratio, test_ratio, random_st
 
 def get_datasets():
     '''划分数据集并返回结果'''
-    # tuples = traverse_coreKG() ## 核心图谱
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
+    tuples = traverse_coreKG()
     train, test, val = train_test_val_split(tuples, train_ratio=0.8, validation_ratio=0.1, test_ratio=0.1, random_state=2023)
     conve_datasets = {'train':train, 'test':test, 'valid':val}
     return conve_datasets
