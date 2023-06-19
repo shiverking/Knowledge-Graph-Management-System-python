@@ -1,6 +1,12 @@
 import pandas as pd
-df = pd.read_excel('triples_10_16.xlsx')
-tuples = df.values.tolist()
+from pyMysql import mysql_query
+
+def get_full_triples():
+    sql = 'select head, head_type, tail, tail_type, relation from core_kg where tail_type != "value"'
+    query_tuples = mysql_query(sql)
+    return query_tuples
+
+tuples = get_full_triples()
 
 def is_label_exist(label):
     label_set = set()
@@ -10,6 +16,7 @@ def is_label_exist(label):
     return label in label_set
 
 def tuple_integrity_graph(ent, ent_typ, missing_tuple):
+ 
     res = []
     for tuple in missing_tuple:
         res.append(tuple)
