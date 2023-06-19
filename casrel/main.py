@@ -13,14 +13,14 @@ from casrel.model import Casrel
 from casrel.utils.common_utils import set_seed, set_logger, read_json, fine_grade_tokenize
 from casrel.utils.train_utils import load_model_and_parallel, build_optimizer_and_scheduler, save_model
 from casrel.utils.metric_utils import calculate_metric_relation, get_p_r_f
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 
 args = config.Args().get_parser()
 set_seed(args.seed)
 logger = logging.getLogger(__name__)
 
-if args.use_tensorboard == "True":
-    writer = SummaryWriter(log_dir='./tensorboard')
+# if args.use_tensorboard == "True":
+#     writer = SummaryWriter(log_dir='./tensorboard')
   
 def get_spo(object_preds, subject_ids, length, example, id2tag):
   # object_preds:[batchsize, maxlen, num_labels, 2]
@@ -308,7 +308,7 @@ def extract_triples(inputs):
     data_name = 'ske'
     model_name = 'bert'
 
-    set_logger(os.path.join(args.log_dir, '{}.log'.format(model_name)))
+    # set_logger(os.path.join(args.log_dir, '{}.log'.format(model_name)))
     if data_name == "ske":
         args.data_dir = './casrel/data/ske'
         data_path = os.path.join(args.data_dir, 'raw_data')
