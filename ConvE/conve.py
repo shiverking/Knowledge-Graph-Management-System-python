@@ -2,10 +2,6 @@ from ConvE.data_loader import TrainDataset, TestDataset
 from ConvE.helper import get_combined_results, set_gpu
 from ConvE.model import ConvE
 from ConvE.shuffle import get_datasets
-# from data_loader import TrainDataset, TestDataset
-# from helper import get_combined_results, set_gpu
-# from model import ConvE
-# from shuffle import get_datasets
 
 from ordered_set import OrderedSet
 from collections import defaultdict as ddict
