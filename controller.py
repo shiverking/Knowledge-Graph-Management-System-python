@@ -13,14 +13,26 @@ from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
 from integrity_checks import get_the_complete_label_graph_and_missing_situations, tuple_integrity_graph
 from casrel.main import extract_triples
+from ch_triple_extraction import ch_tri_ext
 
 server = Flask(__name__)
 server.config['JSON_AS_ASCII']=False
 
 entites, relations = [], []
 
+@server.route('/triple_extraction_demo',methods=['post'])
+def triple_extraction_demo():
+    '''三元组抽取-演示'''
+    inputs = request.json.get('data')
+    res = ch_tri_ext(inputs)
+    dict = {}
+    dict['data'] = res
+    dict['status'] = 200
+    return jsonify(dict)
+
 @server.route('/triple_extraction',methods=['post'])
 def triple_extraction():
+    '''三元组抽取服务'''
     inputs = request.json.get('data')
     res = extract_triples(inputs)
     dict = {}
