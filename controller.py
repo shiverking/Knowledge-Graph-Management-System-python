@@ -14,20 +14,20 @@ from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
 from integrity_checks import get_the_complete_label_graph_and_missing_situations, tuple_integrity_graph
+from casrel.main import extract_triples
 
 server = Flask(__name__)
 server.config['JSON_AS_ASCII']=False
 
 entites, relations = [], []
 
-# @server.route('/triple_extraction',methods=['post'])
-# def triple_extraction():
-#     # inputs = request.json.get('data')
-#     # res = extract_triples(inputs)
-#     res = [{'head':'陈嘉文', 'rel':'同事', 'tail':'闫崇傲'}, {'head':'陈嘉文', 'rel':'偶像', 'tail':'李沐'}]
-#     dict = {}
-#     dict['data'] = res
-#     return jsonify(dict)
+@server.route('/triple_extraction',methods=['post'])
+def triple_extraction():
+    inputs = request.json.get('data')
+    res = extract_triples(inputs)
+    dict = {}
+    dict['data'] = res
+    return jsonify(dict)
 
 @server.route('/link_prediction',methods=['post'])
 def link_prediction():
@@ -190,16 +190,6 @@ def get_lpm_table():
     res = get_lpms()
     dict = {}
     dict['data'] = res
-    return jsonify(dict)
-
-@server.route('/triple_extraction',methods=['post'])
-def triple_extraction():
-    '''三元组抽取'''
-    inputs = request.json.get('data')
-    res = ch_tri_ext(inputs)
-    dict = {}
-    dict['data'] = res
-    dict['status'] = 200
     return jsonify(dict)
 
 @server.route('/draw_graph',methods=['post'])
