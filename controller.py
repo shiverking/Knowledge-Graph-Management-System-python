@@ -7,7 +7,6 @@ from linkPrediction2Mysql import get_modSet_for_selection, get_lpms, add_model_t
 from ConvE.conve import triple_classification as triple_confidence
 from ConvE.conve import train_model
 import psutil
-from entityAlignmentService import calSimilarity
 from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
@@ -93,9 +92,9 @@ def add_model_to_lpm_table():
 def learning_finish():
     '''链接预测训练结束-修改train_status为0'''
     model_name = request.json.get('data')
-    lpm_finish(model_name)
+    res = lpm_finish(model_name)
     dict = {}
-    dict['data'] = ''
+    dict['data'] = res
     return dict
 
 @server.route('/get_status_of_cpu',methods=['post'])

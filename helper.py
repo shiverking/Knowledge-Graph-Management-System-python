@@ -19,9 +19,14 @@ def load_pickle_file(file_path):
 
 def get_abnormal_by_kgist():
     '''通过kgist算法检测链接异常'''
-    import subprocess
-    subprocess.call(['python', 'main.py', '--graph', 'demo'])
-    return kgist_predict()
+    sql = 'select head, head_type, relation, tail, tail_type from core_kg'
+    query_res = mysql_query(sql)
+    if query_res:
+        import subprocess
+        subprocess.call(['python', 'main.py', '--graph', 'demo'])
+        return kgist_predict()
+    else:
+        return []
 
 def get_entSet_for_selection():
     '''核心图谱中的实体集合'''
@@ -145,4 +150,4 @@ def links_notConform_ontology():
 #     return res
 
 if __name__ == "__main__":
-    print(get_relSet_for_selection())
+    print(get_abnormal_by_kgist())

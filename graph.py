@@ -66,7 +66,7 @@ class Graph:
             self.label_to_id = dict()
             self.id_to_label = dict()
         # read node label mapping
-        sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg'
+        sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
         query_res = mysql_query(sql)
         for line in query_res:
             if line[1] != 'value':
@@ -101,7 +101,7 @@ class Graph:
         self.id_to_edge = dict()
         # read edgelist
         edge_labels = set()
-        sql = 'select head, head_type, relation, tail, tail_type from core_kg'
+        sql = 'select head, head_type, relation, tail, tail_type from core_kg where tail_type != "value"'
         query_res = mysql_query(sql)
         self.tensor = set()
         for sub, _, pred, obj, tail_typ in query_res:
