@@ -1,5 +1,4 @@
 import time
-import pandas as pd
 import GPUtil
 from pyMysql import mysql_query
 import pickle
