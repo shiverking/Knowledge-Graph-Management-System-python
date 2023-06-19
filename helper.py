@@ -1,12 +1,9 @@
-#coding:utf-8
 import time
 import pandas as pd
 import GPUtil
 from pyMysql import mysql_query
 import pickle
-from mysql2neo4j import traverse_coreKG
 from predict import kgist_predict
-from main import main
 
 def get_gpu_info():
     '''获取gpu状态'''
@@ -29,33 +26,20 @@ def get_abnormal_by_kgist():
 
 def get_entSet_for_selection():
     '''核心图谱中的实体集合'''
-    # sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg'
-    # query_res = mysql_query(sql)
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
-    ent_set = set()
-    for tu in tuples:
-        h, h_t, t, t_t, r = tu
-        ent_set.add((h, h_t))
-        ent_set.add((t, t_t))
+    sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
+    query_res = mysql_query(sql)
     ent_res = list()
-    for ent in ent_set:
+    for ent in query_res:
         ent_res.append({'value': ent[0], 'ent_typ': ent[1]})
     return ent_res
     
 def get_relSet_for_selection():
     '''核心图谱中的关系集合'''
-    sql = 'select distinct relation from core_kg'
+    sql = 'select distinct relation from core_kg where tail_type != "value"'
     query_res = mysql_query(sql)
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
-    rel_set = set()
-    for tu in tuples:
-        h, h_t, t, t_t, r = tu
-        rel_set.add(r)
     rel_res = list()
-    for rel in rel_set:
-        rel_res.append({'value': rel})
+    for rel in query_res:
+        rel_res.append({'value': rel[0]})
     return rel_res
 
 def a_jump_of_hr(row):
@@ -74,13 +58,17 @@ def a_jump_of_hr(row):
             break
     return res
 
+def traverse_coreKG():
+    '''遍历核心图谱'''
+    sql = 'select head, head_type, tail, tail_type, relation from core_kg where tail_type != "value"'
+    res = mysql_query(sql)
+    return res
+
 def link_completion():
     '''基于制定的规则来对核心图谱进行链接补全'''
     res_tuples = list()
     state_set = set()
-    # tuples = traverse_coreKG()
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
+    tuples = traverse_coreKG()
     for tup in tuples:
         h, h_typ,  t, t_typ, r = tup
         if (h_typ, r, t_typ) == ('海军将领', '家庭信息', '州'):
@@ -95,14 +83,9 @@ def link_completion():
 
 def search_type_of_ent(ent):
     '''寻找实体对应的实体类别（解决目前的链接预测不使用类别的问题）'''
-    df = pd.read_excel('triples_10_16.xlsx')
-    triples = df.values.tolist()
-    ent2typ = set()
-    for tri in triples:
-        h, h_typ, t, t_typ, r = tri
-        ent2typ.add((h, h_typ))
-        ent2typ.add((t, t_typ))
-    for et in list(ent2typ):
+    sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
+    query_res = mysql_query(sql)
+    for et in query_res:
         if et[0] == ent:
             return et[1]
         else:
@@ -163,4 +146,4 @@ def links_notConform_ontology():
 #     return res
 
 if __name__ == "__main__":
-    print(get_abnormal_by_kgist())
+    print(get_relSet_for_selection())

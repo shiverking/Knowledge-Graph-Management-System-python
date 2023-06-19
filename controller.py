@@ -9,7 +9,6 @@ from ConvE.conve import triple_classification as triple_confidence
 from ConvE.conve import train_model
 import psutil
 from entityAlignmentService import calSimilarity
-from ch_triple_extraction import ch_tri_ext
 from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
@@ -67,6 +66,7 @@ def train_new_model():
     '''训练新的链接预测模型'''
     inputs = request.json.get('data')
     model_name = inputs['name']
+    print(model_name)
     train_model(model_name)
     dict = {}
     dict['data'] = ''
