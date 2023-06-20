@@ -463,13 +463,14 @@ def triple_classification(triples):
     set_gpu(args.gpu)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    model = Main(args)
-    model.load_model("ConvE/models/十一打击群")
+
     res = []
     for triple in triples:
         dict = {}
         sum = 0
         try:
+            model = Main(args)
+            model.load_model("ConvE/models/CSG_model")
             _, list, _ = model.link_prediction(triple['head'], triple['relation'])[:]
             # print(_)
             # print(list)
@@ -507,7 +508,7 @@ def train_model(model_name):
     parser.add_argument('-no_rev',         	dest="reverse",         action='store_false',           help='Use uniform weighting')
     parser.add_argument('-nosave',       	dest="save",       	action='store_false',           help='Negative adversarial sampling')
 
-    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=2,  help="Number of epochs")
+    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=80,  help="Number of epochs")
     parser.add_argument("-num_workers",	type=int,               default=5,                      help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
     parser.add_argument("-embed_dim",	type=int,              	default=None,                   help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
 
@@ -535,14 +536,19 @@ def train_model(model_name):
     args = parser.parse_args()
 
     if not args.restore: args.name = args.name + '_' + time.strftime("%d_%m_%Y") + '_' + time.strftime("%H:%M:%S")
+    if get_datasets():
+        set_gpu(args.gpu)
+        np.random.seed(args.seed)
+        torch.manual_seed(args.seed)
 
-    set_gpu(args.gpu)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-
-    model = Main(args)
-    model.fit()
-    model.save_model(f"ConvE/models/{model_name}")
+        model = Main(args)
+        model.fit()
+        model.save_model(f"ConvE/models/{model_name}")
+        return True
+    else:
+        from linkPrediction2Mysql import delete_lpm
+        delete_lpm(model_name)
+        return False
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Parser For Arguments", formatter_class=argparse.ArgumentDefaultsHelpFormatter)

@@ -2,12 +2,11 @@ from flask import Flask,jsonify,request
 from flask_cors import CORS
 from ConvE.conve import link_prediction_1
 from helper import get_gpu_info, get_abnormal_by_kgist, get_entSet_for_selection, get_relSet_for_selection, a_jump_of_hr, \
-        link_completion, links_notConform_ontology, search_type_of_ent
+        link_completion, links_notConform_ontology, search_type_of_ent, sample_from_CSG
 from linkPrediction2Mysql import get_modSet_for_selection, get_lpms, add_model_to_lpm, get_lpms, lpm_finish, delete_lpm
 from ConvE.conve import triple_classification as triple_confidence
 from ConvE.conve import train_model
 import psutil
-from entityAlignmentService import calSimilarity
 from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
@@ -19,6 +18,14 @@ server = Flask(__name__)
 server.config['JSON_AS_ASCII']=False
 
 entites, relations = [], []
+
+@server.route('/link_prediction_demo',methods=['post'])
+def link_prediction_demo():
+    '''待预测数据随机采样-演示'''
+    res = sample_from_CSG()
+    dict = {}
+    dict['data'] = res
+    return jsonify(dict)
 
 @server.route('/triple_extraction_demo',methods=['post'])
 def triple_extraction_demo():
@@ -73,10 +80,10 @@ def train_new_model():
     '''训练新的链接预测模型'''
     inputs = request.json.get('data')
     model_name = inputs['name']
-    print(model_name)
-    train_model(model_name)
+    res = train_model(model_name)
+    print("train_new_model的结果：",res)
     dict = {}
-    dict['data'] = ''
+    dict['data'] = res
     return jsonify(dict)
 
 @server.route('/add_model_to_lpm_table',methods=['post'])
@@ -93,9 +100,9 @@ def add_model_to_lpm_table():
 def learning_finish():
     '''链接预测训练结束-修改train_status为0'''
     model_name = request.json.get('data')
-    lpm_finish(model_name)
+    res = lpm_finish(model_name)
     dict = {}
-    dict['data'] = ''
+    dict['data'] = res
     return dict
 
 @server.route('/get_status_of_cpu',methods=['post'])

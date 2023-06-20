@@ -16,9 +16,14 @@ def train_test_val_split(x, train_ratio, validation_ratio, test_ratio, random_st
 def get_datasets():
     '''划分数据集并返回结果'''
     tuples = traverse_coreKG()
-    train, test, val = train_test_val_split(tuples, train_ratio=0.8, validation_ratio=0.1, test_ratio=0.1, random_state=2023)
-    conve_datasets = {'train':train, 'test':test, 'valid':val}
-    return conve_datasets
+    import pandas as pd
+    df = pd.read_excel('triples_10_16.xlsx')
+    tuples = df.values.tolist()
+    if tuples:
+        train, test, val = train_test_val_split(tuples, train_ratio=0.8, validation_ratio=0.1, test_ratio=0.1, random_state=2023)
+        conve_datasets = {'train':train, 'test':test, 'valid':val}
+        return conve_datasets
+    return False
 
 if __name__ == '__main__':
     print(get_datasets())

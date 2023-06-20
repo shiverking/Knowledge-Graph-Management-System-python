@@ -39,8 +39,7 @@ def lpm_finish(name):
     sql = 'select id from link_prediction_model where model_name = (%s)'
     sql_res = mysql_query(sql, name)
     sql = "update link_prediction_model set train_status = 0 where id = (%s)"
-    res = mysql_in_up_re(sql, sql_res[0][0])
-    return res
+    mysql_in_up_re(sql, sql_res[0][0])
 
 def delete_lpm(name):
     '''删除模型'''
@@ -49,3 +48,6 @@ def delete_lpm(name):
     sql = "delete from link_prediction_model where id = (%s)"
     res = mysql_in_up_re(sql, sql_res[0][0])
     return res
+
+if __name__ == '__main__':
+    print(lpm_finish('sahgdashj'))
