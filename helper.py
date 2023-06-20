@@ -3,6 +3,8 @@ import GPUtil
 from pyMysql import mysql_query
 import pickle
 from predict import kgist_predict
+import pandas as pd
+import numpy as np 
 
 def get_gpu_info():
     '''获取gpu状态'''
@@ -28,22 +30,53 @@ def get_abnormal_by_kgist():
     else:
         return []
 
+# def get_entSet_for_selection():
+#     '''核心图谱中的实体集合'''
+#     sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
+#     query_res = mysql_query(sql)
+#     ent_res = list()
+#     for ent in query_res:
+#         ent_res.append({'value': ent[0], 'ent_typ': ent[1]})
+#     return ent_res
+
 def get_entSet_for_selection():
     '''核心图谱中的实体集合'''
-    sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
-    query_res = mysql_query(sql)
+    # sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg'
+    # query_res = mysql_query(sql)
+    df = pd.read_excel('triples_10_16.xlsx')
+    tuples = df.values.tolist()
+    ent_set = set()
+    for tu in tuples:
+        h, h_t, t, t_t, r = tu
+        ent_set.add((h, h_t))
+        ent_set.add((t, t_t))
     ent_res = list()
-    for ent in query_res:
+    for ent in ent_set:
         ent_res.append({'value': ent[0], 'ent_typ': ent[1]})
     return ent_res
-    
+
+# def get_relSet_for_selection():
+#     '''核心图谱中的关系集合'''
+#     sql = 'select distinct relation from core_kg where tail_type != "value"'
+#     query_res = mysql_query(sql)
+#     rel_res = list()
+#     for rel in query_res:
+#         rel_res.append({'value': rel[0]})
+#     return rel_res
+
 def get_relSet_for_selection():
     '''核心图谱中的关系集合'''
-    sql = 'select distinct relation from core_kg where tail_type != "value"'
+    sql = 'select distinct relation from core_kg'
     query_res = mysql_query(sql)
+    df = pd.read_excel('triples_10_16.xlsx')
+    tuples = df.values.tolist()
+    rel_set = set()
+    for tu in tuples:
+        h, h_t, t, t_t, r = tu
+        rel_set.add(r)
     rel_res = list()
-    for rel in query_res:
-        rel_res.append({'value': rel[0]})
+    for rel in rel_set:
+        rel_res.append({'value': rel})
     return rel_res
 
 def a_jump_of_hr(row):
@@ -85,11 +118,27 @@ def link_completion():
           res_tuples.append({'head': state, 'head_typ': '州', 'rel': '隶属', 'tail': '美国', 'tail_typ': '国家'})
     return res_tuples
 
+# def search_type_of_ent(ent):
+#     '''寻找实体对应的实体类别（解决目前的链接预测不使用类别的问题）'''
+#     sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
+#     query_res = mysql_query(sql)
+#     for et in query_res:
+#         if et[0] == ent:
+#             return et[1]
+#         else:
+#             continue
+#     return '-'
+
 def search_type_of_ent(ent):
     '''寻找实体对应的实体类别（解决目前的链接预测不使用类别的问题）'''
-    sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg where tail_type != "value"'
-    query_res = mysql_query(sql)
-    for et in query_res:
+    df = pd.read_excel('triples_10_16.xlsx')
+    triples = df.values.tolist()
+    ent2typ = set()
+    for tri in triples:
+        h, h_typ, t, t_typ, r = tri
+        ent2typ.add((h, h_typ))
+        ent2typ.add((t, t_typ))
+    for et in list(ent2typ):
         if et[0] == ent:
             return et[1]
         else:
@@ -108,6 +157,18 @@ def links_notConform_ontology():
         if (h_t, r, t_t) not in query_ontology or t_t == '其他' or h_t == '其他':
             res_tuples.append({'head':h, 'head_typ':h_t, 'rel':r, 'tail':t, 'tail_typ':t_t, 'time': get_time(), 'error_typ': 0, 'error_status': 0})
     return res_tuples
+
+def sample_from_CSG():
+    df = pd.read_excel('triples_10_16.xlsx')
+    tuples = df.values.tolist()
+    n = len(tuples)
+    res = []
+    for _ in range(10):
+        h_or_t = np.random.randint(0, 1)
+        idx1 = np.random.randint(0, n-1)
+        res.append({'ent':tuples[idx1][0], 'ent_typ':tuples[idx1][1], 'rel':tuples[idx1][4]})
+    return res
+        
 
 # def attribute_error_simulation():
 #     import re
@@ -150,4 +211,4 @@ def links_notConform_ontology():
 #     return res
 
 if __name__ == "__main__":
-    print(get_abnormal_by_kgist())
+    print(sample_from_CSG())
