@@ -508,7 +508,7 @@ def train_model(model_name):
     parser.add_argument('-no_rev',         	dest="reverse",         action='store_false',           help='Use uniform weighting')
     parser.add_argument('-nosave',       	dest="save",       	action='store_false',           help='Negative adversarial sampling')
 
-    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=80,  help="Number of epochs")
+    parser.add_argument("-epoch",		dest='max_epochs', 	type=int,         default=1,  help="Number of epochs")
     parser.add_argument("-num_workers",	type=int,               default=5,                      help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
     parser.add_argument("-embed_dim",	type=int,              	default=None,                   help="For CPU:0, For GPU Serial:1, For GPU PS and COLLECTIVE_ALL_REDUCE: 1+")
 
