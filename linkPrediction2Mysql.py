@@ -38,11 +38,8 @@ def lpm_finish(name):
     '''训练完成后将模型的训练状态设为0'''
     sql = 'select id from link_prediction_model where model_name = (%s)'
     sql_res = mysql_query(sql, name)
-    res = False
-    if sql_res:
-        sql = "update link_prediction_model set train_status = 0 where id = (%s)"
-        res = mysql_in_up_re(sql, sql_res[0][0])
-    return res
+    sql = "update link_prediction_model set train_status = 0 where id = (%s)"
+    mysql_in_up_re(sql, sql_res[0][0])
 
 def delete_lpm(name):
     '''删除模型'''
