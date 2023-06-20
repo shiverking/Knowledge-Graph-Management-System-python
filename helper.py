@@ -21,7 +21,7 @@ def load_pickle_file(file_path):
 
 def get_abnormal_by_kgist():
     '''通过kgist算法检测链接异常'''
-    sql = 'select head, head_type, relation, tail, tail_type from core_kg'
+    sql = 'select head, head_type, relation, tail, tail_type from core_kg where tail_type != "value"'
     query_res = mysql_query(sql)
     if query_res:
         import subprocess
@@ -41,19 +41,22 @@ def get_abnormal_by_kgist():
 
 def get_entSet_for_selection():
     '''核心图谱中的实体集合'''
-    # sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg'
-    # query_res = mysql_query(sql)
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
-    ent_set = set()
-    for tu in tuples:
-        h, h_t, t, t_t, r = tu
-        ent_set.add((h, h_t))
-        ent_set.add((t, t_t))
-    ent_res = list()
-    for ent in ent_set:
-        ent_res.append({'value': ent[0], 'ent_typ': ent[1]})
-    return ent_res
+    sql = 'select head, head_type from core_kg union select tail, tail_type from core_kg'
+    query_res = mysql_query(sql)
+    if query_res:
+        df = pd.read_excel('triples_10_16.xlsx')
+        tuples = df.values.tolist()
+        ent_set = set()
+        for tu in tuples:
+            h, h_t, t, t_t, r = tu
+            ent_set.add((h, h_t))
+            ent_set.add((t, t_t))
+        ent_res = list()
+        for ent in ent_set:
+            ent_res.append({'value': ent[0], 'ent_typ': ent[1]})
+        return ent_res
+    else:
+        return []
 
 # def get_relSet_for_selection():
 #     '''核心图谱中的关系集合'''
@@ -68,16 +71,19 @@ def get_relSet_for_selection():
     '''核心图谱中的关系集合'''
     sql = 'select distinct relation from core_kg'
     query_res = mysql_query(sql)
-    df = pd.read_excel('triples_10_16.xlsx')
-    tuples = df.values.tolist()
-    rel_set = set()
-    for tu in tuples:
-        h, h_t, t, t_t, r = tu
-        rel_set.add(r)
-    rel_res = list()
-    for rel in rel_set:
-        rel_res.append({'value': rel})
-    return rel_res
+    if query_res:
+        df = pd.read_excel('triples_10_16.xlsx')
+        tuples = df.values.tolist()
+        rel_set = set()
+        for tu in tuples:
+            h, h_t, t, t_t, r = tu
+            rel_set.add(r)
+        rel_res = list()
+        for rel in rel_set:
+            rel_res.append({'value': rel})
+        return rel_res
+    else:
+        return []
 
 def a_jump_of_hr(row):
     '''寻找当前元组周围一跳的信息'''
@@ -103,6 +109,12 @@ def traverse_coreKG():
 
 def link_completion():
     '''基于制定的规则来对核心图谱进行链接补全'''
+    states = ["阿拉巴马州","阿拉斯加州","亚利桑那州","阿肯色州","加利福尼亚州","科罗拉多州","康涅狄格州","特拉华州","佛罗里达州",\
+        "乔治亚州","夏威夷州","爱达荷州","伊利诺斯州","印第安纳州","爱荷华州","堪萨斯州","肯塔基州","路易斯安那州",\
+    "缅因州","马里兰州","马萨诸塞州","密歇根州","明尼苏达州","密西西比州","密苏里州","蒙大拿州","内布拉斯加州","内华达州",\
+        "新罕布什尔州","新泽西州","新墨西哥州","纽约州","北卡罗来纳州","北达科他州","俄亥俄州","俄克拉荷马州","俄勒冈州",\
+    "宾夕法尼亚州","罗得岛州","南卡罗来纳州","南达科他州","田纳西州","德克萨斯州","犹他州","佛蒙特州","弗吉尼亚州","华盛顿州",\
+    "西弗吉尼亚州","威斯康辛州","怀俄明州"]
     res_tuples = list()
     state_set = set()
     tuples = traverse_coreKG()
@@ -114,9 +126,13 @@ def link_completion():
             state_set.add(h)
         if t_typ == '州':
             state_set.add(t)
+        if h in states:
+            state_set.add(h)
+        if t in states:
+            state_set.add(t)
     for state in list(state_set):
           res_tuples.append({'head': state, 'head_typ': '州', 'rel': '隶属', 'tail': '美国', 'tail_typ': '国家'})
-    return res_tuples
+    return list(set(res_tuples))
 
 # def search_type_of_ent(ent):
 #     '''寻找实体对应的实体类别（解决目前的链接预测不使用类别的问题）'''
