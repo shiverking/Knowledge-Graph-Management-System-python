@@ -470,7 +470,7 @@ def triple_classification(triples):
         sum = 0
         try:
             model = Main(args)
-            model.load_model("ConvE/models/十一打击群")
+            model.load_model("ConvE/models/CSG_model")
             _, list, _ = model.link_prediction(triple['head'], triple['relation'])[:]
             # print(_)
             # print(list)
