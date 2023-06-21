@@ -37,14 +37,14 @@ def triple_extraction_demo():
     dict['status'] = 200
     return jsonify(dict)
 
-@server.route('/triple_extraction',methods=['post'])
-def triple_extraction():
-    '''三元组抽取服务'''
-    inputs = request.json.get('data')
-    res = extract_triples(inputs)
-    dict = {}
-    dict['data'] = res
-    return jsonify(dict)
+# @server.route('/triple_extraction',methods=['post'])
+# def triple_extraction():
+#     '''三元组抽取服务'''
+#     inputs = request.json.get('data')
+#     res = extract_triples(inputs)
+#     dict = {}
+#     dict['data'] = res
+#     return jsonify(dict)
 
 @server.route('/link_prediction',methods=['post'])
 def link_prediction():
