@@ -132,7 +132,7 @@ def link_completion():
             state_set.add(t)
     for state in list(state_set):
           res_tuples.append({'head': state, 'head_typ': '州', 'rel': '隶属', 'tail': '美国', 'tail_typ': '国家'})
-    return list(set(res_tuples))
+    return res_tuples
 
 # def search_type_of_ent(ent):
 #     '''寻找实体对应的实体类别（解决目前的链接预测不使用类别的问题）'''
@@ -163,7 +163,7 @@ def search_type_of_ent(ent):
 
 def links_notConform_ontology():
     '''检测核心图谱中异常的边（不存在于核心本体）'''
-    sql1 = 'select head, head_type, relation, tail, tail_type from core_kg'
+    sql1 = 'select head, head_type, relation, tail, tail_type from core_kg where tail_type != "value"'
     query_tuples = mysql_query(sql1)
     sql2 = 'select head_class_name, relation_name, tail_class_name from core_onto_object_property'
     query_ontology = mysql_query(sql2)

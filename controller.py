@@ -11,7 +11,7 @@ from entityAlignmentService import calSimilarity,calSimilarityFromCoreKg
 from entityController import getAlLEntites
 from mysql2neo4j import insert2neo4j, select_synchronization_from_version_record, update_synchronization_from_version_record
 from integrity_checks import get_the_complete_label_graph_and_missing_situations, tuple_integrity_graph
-from casrel.main import extract_triples
+# from casrel.main import extract_triples
 from ch_triple_extraction import ch_tri_ext
 
 server = Flask(__name__)
