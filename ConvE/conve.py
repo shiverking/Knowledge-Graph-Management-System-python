@@ -385,7 +385,7 @@ def link_prediction_1(triples_without_tail, model_name):
     parser = argparse.ArgumentParser(description="Parser For Arguments", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-name",            default='testrun',					help="Set filename for saving or restoring models")
     parser.add_argument('-batch',           dest="batch_size",      default=64,    type=int,       help='Batch size')
-    parser.add_argument("-gpu",		type=str,               default='0',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
+    parser.add_argument("-gpu",		type=str,               default='-1',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
     parser.add_argument("-l2",		type=float,             default=0.0,			help="L2 Regularization for Optimizer")
     parser.add_argument("-lr",		type=float,             default=0.001,			help="For Standard/Adaptive: Starting Learning Rate, CLR : Minimum LR")
     parser.add_argument('-loss',            dest="loss",		default='bce',			help='GPU to use')
@@ -433,7 +433,7 @@ def triple_classification(triples):
     parser = argparse.ArgumentParser(description="Parser For Arguments", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-name",            default='testrun',					help="Set filename for saving or restoring models")
     parser.add_argument('-batch',           dest="batch_size",      default=64,    type=int,       help='Batch size')
-    parser.add_argument("-gpu",		type=str,               default='0',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
+    parser.add_argument("-gpu",		type=str,               default='-1',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
     parser.add_argument("-l2",		type=float,             default=0.0,			help="L2 Regularization for Optimizer")
     parser.add_argument("-lr",		type=float,             default=0.001,			help="For Standard/Adaptive: Starting Learning Rate, CLR : Minimum LR")
     parser.add_argument('-loss',            dest="loss",		default='bce',			help='GPU to use')
@@ -463,14 +463,13 @@ def triple_classification(triples):
     set_gpu(args.gpu)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-
+    model = Main(args)
+    model.load_model("ConvE/models/十一打击群")
     res = []
     for triple in triples:
         dict = {}
         sum = 0
         try:
-            model = Main(args)
-            model.load_model("ConvE/models/CSG_model")
             _, list, _ = model.link_prediction(triple['head'], triple['relation'])[:]
             # print(_)
             # print(list)
@@ -499,7 +498,7 @@ def train_model(model_name):
 
     parser.add_argument('-batch',           dest="batch_size",      default=64,    type=int,       help='Batch size')
 
-    parser.add_argument("-gpu",		type=str,               default='0',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
+    parser.add_argument("-gpu",		type=str,               default='-1',			help="Set GPU Ids : Eg: For CPU = -1, For Single GPU = 0, For Multiple GPU = 0,1")
     parser.add_argument("-l2",		type=float,             default=0.0,			help="L2 Regularization for Optimizer")
     parser.add_argument("-lr",		type=float,             default=0.001,			help="For Standard/Adaptive: Starting Learning Rate, CLR : Minimum LR")
     parser.add_argument('-loss',            dest="loss",		default='bce',			help='GPU to use')
